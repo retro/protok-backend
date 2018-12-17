@@ -13,7 +13,7 @@
     (oset! e :!extensions.!errors (clj->js errors))
     (throw e)))
 
-(defn validate-resolver-args! [args validator]
+(defn validate! [args validator]
   (let [errors (validator args)]
     (if (and (not (nil? errors)) (not (empty? errors)))
       (throw-validation-errors errors)

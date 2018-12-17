@@ -8,7 +8,8 @@
            :main server.core/main
            :devtools {:before-load-async server.core/stop
                       :after-load server.core/start}
-           :output-to "out/server/server.js"}
+           :output-to "out/server/server.js"
+           :release {:compiler-options {:optimizations :simple}}}
   :test
   {:target    :node-test
    :output-to "out/node-tests.js"

@@ -1,4 +1,4 @@
-(ns server.domain.login-code
+(ns server.domain.session
   (:require [honeysql.helpers :as h]
             [honeysql.core :as sql]
             [honeysql-postgres.helpers :as hp]

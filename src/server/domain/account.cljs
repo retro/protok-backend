@@ -4,7 +4,6 @@
             [honeysql-postgres.helpers :as hp]
             [server.framework.honeysql :refer [query query-one]]
             [promesa.core :as p :refer-macros [alet]]
-            [server.framework.bcrypt :as bcrypt]
             [server.framework.batcher :as b]
             [server.framework.batcher.batch-by-id :refer [->BatchById]]))
 
@@ -33,9 +32,11 @@
     conn
     (sql/build :select (get-selected-fields fields) :from :accounts :where [:= :email email]))))
 
-(defn find-or-create-by-email! [conn email]
-  (alet [acc (p/await (find-by-email conn email [:id :email]))]
-    (if acc
-      acc
-      (create-account! conn email))))
+(defn find-or-create-by-email!
+  ([conn email] (find-or-create-by-email! conn email [:id :email]))
+  ([conn email fields]
+   (alet [acc (p/await (find-by-email conn email (get-selected-fields fields)))]
+     (if acc
+       acc
+       (create-account! conn email)))))
 
