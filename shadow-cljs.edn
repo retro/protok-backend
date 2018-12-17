@@ -1,0 +1,16 @@
+{:source-paths ["src/server" "src/test"]
+ :deps true
+ :builds
+ {:server {:id :script
+           :target :node-script
+           :compiler-options {:source-map true
+                              :infer-externs :auto}
+           :main server.core/main
+           :devtools {:before-load-async server.core/stop
+                      :after-load server.core/start}
+           :output-to "out/server/server.js"}
+  :test
+  {:target    :node-test
+   :output-to "out/node-tests.js"
+   :autorun   true
+   :main test.core-test/main}}}

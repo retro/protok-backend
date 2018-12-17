@@ -1,0 +1,9 @@
+{:deps
+ {binaryage/oops            {:mvn/version "0.6.2"}
+  mount                     {:mvn/version "0.1.13"}
+  camel-snake-kebab         {:mvn/version "0.4.0"}
+  com.taoensso/timbre       {:mvn/version "4.10.0"}
+  funcool/promesa           {:mvn/version "1.9.0"}
+  honeysql                  {:mvn/version "0.9.3"}
+  nilenso/honeysql-postgres {:mvn/version "0.2.4"}
+  cljs-ajax                 {:mvn/version "0.7.4"}}}

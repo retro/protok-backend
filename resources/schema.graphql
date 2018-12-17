@@ -1,0 +1,19 @@
+ type Account {
+  id: ID!
+  email: String!
+  username: String!
+}
+
+type Session {
+  token: String!
+  account: Account!
+}
+
+type Query {
+  currentAccount: Account
+}
+
+type Mutation {
+  requestLoginCode(email:String!): Boolean
+  loginWithCode(email:String!, code:String): Session
+}

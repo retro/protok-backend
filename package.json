@@ -1,0 +1,27 @@
+{
+  "name": "protok",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.18.3",
+    "shadow-cljs": "^2.6.2",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "scripts": {
+    "test-watch": "DATABASE_URL=$TEST_DATABASE_URL shadow-cljs watch test",
+    "test": "DATABASE_URL=$TEST_DATABASE_URL shadow-cljs compile test"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bluebird": "^3.5.1",
+    "cors": "^2.8.5",
+    "db-migrate": "^0.11.1",
+    "db-migrate-pg": "^0.4.0",
+    "express-bearer-token": "^2.2.0",
+    "graphql-yoga": "^1.16.7",
+    "indefinite": "^2.1.1",
+    "jsonwebtoken": "^8.3.0",
+    "pg": "^7.4.3"
+  }
+}
