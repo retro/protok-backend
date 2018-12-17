@@ -13,6 +13,7 @@
     "test": "DATABASE_URL=$TEST_DATABASE_URL shadow-cljs compile test"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.1",
     "cors": "^2.8.5",
@@ -20,8 +21,11 @@
     "db-migrate-pg": "^0.4.0",
     "express-bearer-token": "^2.2.0",
     "graphql-yoga": "^1.16.7",
+    "html-to-text": "^4.0.0",
     "indefinite": "^2.1.1",
     "jsonwebtoken": "^8.3.0",
-    "pg": "^7.4.3"
+    "mjml": "^4.2.1",
+    "pg": "^7.4.3",
+    "preview-email": "^0.0.8"
   }
 }

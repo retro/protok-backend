@@ -53,7 +53,7 @@
     batcher-ch))
 
 (defn stop-batcher [batcher]
-  (close! batcher))
+  (close! @batcher))
 
 (defstate batcher
   :start (start-batcher)

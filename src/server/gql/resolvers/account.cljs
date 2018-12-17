@@ -30,21 +30,7 @@
    (resolver! [value parent args context]
      (account/find-by-id (:system/db context) (:current-account context)))))
 
-(def login
-  (shields/no-current-account!
-   (resolver! [value parent args context info]
-     (validate-resolver-args! args login-session-mutation-validator)
-     (account/find-by-email-password (:system/db context) (:account args))
-     (if value
-       (get-session value)
-       (validate-resolver-args! args invalid-login-validator)))))
 
-(def register
-  (shields/no-current-account!
-   (resolver! [value parent args context info]
-     (validate-resolver-args! args register-session-mutation-validator)
-     (account/create-account! (:system/db context) (:account args))
-     (get-session value))))
 
 
 (def resolvers

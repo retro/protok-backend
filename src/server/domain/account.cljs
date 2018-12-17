@@ -8,22 +8,34 @@
             [server.framework.batcher :as b]
             [server.framework.batcher.batch-by-id :refer [->BatchById]]))
 
-(defn create-account! [conn user-data]
-  (alet [{:keys [email password]} user-data
-         hashed-password (p/await (bcrypt/hash-password password))]
-    (query-one
-     conn
-     (-> (h/insert-into :accounts)
-         (h/values [{:email email :password hashed-password}])
-         (hp/returning :*)))))
+(defn get-selected-fields [fields]
+  (cond
+    (= ::* fields) [:id :email :username]
+    (vector? fields) fields
+    :else [fields]))
 
-(defn find-by-email-password [conn {:keys [email password]}]
-  (alet [acc (p/await (query-one
-                       conn
-                       (sql/build :select [:id :email :password :username] :from :accounts :where [:= :email email])))
-         password-valid? (p/await (bcrypt/verify-password (:password acc) password))]
-    (when password-valid?
-      (dissoc acc :password))))
+(defn create-account! [conn email]
+  (query-one
+   conn
+   (-> (h/insert-into :accounts)
+       (h/values [{:email email :username email}])
+       (hp/returning :*))))
 
-(defn find-by-id [conn id]
-  (b/fetch (->BatchById conn (sql/build :select [:id :email :username] :from :accounts) id)))
+(defn find-by-id
+  ([conn id] (find-by-id conn id :id))
+  ([conn id fields]
+   (b/fetch (->BatchById conn (sql/build :select (get-selected-fields fields) :from :accounts) id))))
+
+(defn find-by-email
+  ([conn email] (find-by-email conn email [:id]))
+  ([conn email fields]
+   (query-one
+    conn
+    (sql/build :select (get-selected-fields fields) :from :accounts :where [:= :email email]))))
+
+(defn find-or-create-by-email! [conn email]
+  (alet [acc (p/await (find-by-email conn email [:id :email]))]
+    (if acc
+      acc
+      (create-account! conn email))))
+

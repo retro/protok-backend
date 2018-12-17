@@ -5,9 +5,9 @@
             [server.db :refer [db]]
             [server.gql.shields :as shields]
             [server.framework.jwt :as jwt]
-            [server.domain.account :as account]
+            [server.framework.util :refer [deep-merge]]
             [server.gql.resolvers.account]
-            [server.framework.util :refer [deep-merge]]))
+            [server.gql.resolvers.session]))
 
 (def resolve-context
   (pipeline! [value ctx]
@@ -27,4 +27,5 @@
     :mutation {}
     :session  (with-default-resolvers :token :account)}
    
-   server.gql.resolvers.account/resolvers))
+   server.gql.resolvers.account/resolvers
+   server.gql.resolvers.session/resolvers))
