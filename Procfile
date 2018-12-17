@@ -1,0 +1,1 @@
+web: yarn db-migrate up && yarn run shadow-cljs release server && node out/server/server.js

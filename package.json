@@ -4,15 +4,18 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^1.18.3",
-    "shadow-cljs": "^2.6.2",
-    "xmlhttprequest": "^1.8.0"
+    "nodemon": "^1.18.3"
   },
   "scripts": {
     "test-watch": "DATABASE_URL=$TEST_DATABASE_URL shadow-cljs watch test",
     "test": "DATABASE_URL=$TEST_DATABASE_URL shadow-cljs compile test"
   },
+  "engines": {
+    "node": "8.x"
+  },
   "dependencies": {
+    "shadow-cljs": "^2.7.9",
+    "xmlhttprequest": "^1.8.0",
     "@sendgrid/mail": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.1",
