@@ -1,7 +1,14 @@
- type Account {
+enum OrganizationMembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+} 
+
+type Account {
   id: ID!
   email: String!
   username: String!
+  organizationMemberships: [OrganizationMembership]
 }
 
 type Session {
@@ -12,6 +19,11 @@ type Session {
 type Organization {
   id: ID!
   name: String!
+}
+
+type OrganizationMembership {
+  memberRole: OrganizationMembershipRole!
+  organization: Organization!
 }
 
 input CreateOrganizationInput {

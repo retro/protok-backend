@@ -25,3 +25,13 @@
                     :organization-id organization-id
                     :member-role member-role}])
         (hp/returning :*)))))
+
+(defn find-organization-memberships [conn account-id]
+  (query
+   conn
+   (sql/build :select [:organization-id :member-role]
+              :from :organization-members
+              :where [:= :account-id account-id])))
+
+(defn find-by-id [conn id]
+  (b/fetch (->BatchById conn (sql/build :select [:id :name] :from :organizations) id)))

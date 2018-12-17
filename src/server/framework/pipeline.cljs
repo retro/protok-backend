@@ -29,7 +29,7 @@
   (->> (p/promise val)
        (p/map (fn [res] ignore))))
 
-(def mute! wrap-ignore)
+(def sideffect! wrap-ignore)
 
 (defn ^:private promise->chan [promise]
   (let [promise-chan (chan)]
