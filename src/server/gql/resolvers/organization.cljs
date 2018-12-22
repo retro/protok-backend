@@ -12,12 +12,23 @@
 (def create-organization-validator
   (v/to-validator {:name [:not-blank]}))
 
+(def update-organization-validator
+  (v/to-validator {:name [:not-blank]
+                   :id [:not-blank]}))
+
 (def create-organization
   (shields/has-current-account!
    (ts-resolver! [value parent args context]
      (validate! (:organization args) create-organization-validator)
      (organization/create-organization! (:system/db context) (get-in args [:organization :name]))
      (pp/sideffect! (organization/create-organization-member! (:system/db context) (:id value) (:current-account context) "owner")))))
+
+(def update-organization
+  (shields/has-current-account!
+   (resolver! [value parent args context]
+     (:organization args)
+     (validate! value update-organization-validator)
+     (organization/update-organization! (:system/db context) value))))
 
 (def organization-memberships
   (shields/has-current-account!
@@ -34,10 +45,19 @@
    (resolver! [value parent args context]
      (->SCREAMING_SNAKE_CASE (:member-role parent)))))
 
+(def membership-from-organization
+  (resolver! [value parent args context]
+    (organization/find-organization-membership
+     (:system/db context)
+     (:id parent)
+     (:current-account context))))
+
 (def resolvers
-  {:organization            (with-default-resolvers :id :name)
+  {:organization            (-> {:membership membership-from-organization}
+                                (with-default-resolvers :id :name))
    :account                 {:organization-memberships organization-memberships}
    :organization-membership {:organization organization-from-membership
                              :member-role  member-role}
-   :mutation                {:create-organization create-organization}})
+   :mutation                {:create-organization create-organization
+                             :update-organization update-organization}})
 

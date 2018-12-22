@@ -19,6 +19,7 @@ type Session {
 type Organization {
   id: ID!
   name: String!
+  membership: OrganizationMembership!
 }
 
 type OrganizationMembership {
@@ -30,6 +31,11 @@ input CreateOrganizationInput {
   name: String!
 }
 
+input UpdateOrganizationInput {
+  name: String!
+  id: ID!
+}
+
 type Query {
   currentAccount: Account
 }
@@ -37,5 +43,6 @@ type Query {
 type Mutation {
   requestLoginCode(email:String!): Boolean
   loginWithCode(email:String!, code:String): Session
-  createOrganization(organization: CreateOrganizationInput): Organization
+  createOrganization(organization: CreateOrganizationInput!): Organization
+  updateOrganization(organization: UpdateOrganizationInput!): Organization
 }

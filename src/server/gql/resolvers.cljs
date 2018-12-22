@@ -25,8 +25,7 @@
 (def resolvers
   (deep-merge
    {:query    {}
-    :mutation {}
-    :session  (with-default-resolvers :token :account)}
+    :mutation {}}
    
    server.gql.resolvers.account/resolvers
    server.gql.resolvers.session/resolvers

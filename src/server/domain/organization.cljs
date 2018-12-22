@@ -14,6 +14,16 @@
        (h/values [{:name name}])
        (hp/returning :*))))
 
+(defn update-organization! [conn organization]
+  (let [id (:id organization)
+        data (dissoc organization :id)]
+    (query-one
+     conn
+     (-> (h/update :organizations)
+         (h/sset data)
+         (h/where [:= :id id])
+         (hp/returning :*)))))
+
 (defn create-organization-member!
   ([conn organization-id account-id]
    (create-organization-member! conn organization-id account-id "member"))
@@ -32,6 +42,15 @@
    (sql/build :select [:organization-id :member-role]
               :from :organization-members
               :where [:= :account-id account-id])))
+
+(defn find-organization-membership [conn organization-id account-id]
+  (query-one
+   conn
+   (sql/build :select [:member-role]
+              :from :organization-members
+              :whener [:and
+                       [:= :account-id account-id]
+                       [:= :organization-id organization-id]])))
 
 (defn find-by-id [conn id]
   (b/fetch (->BatchById conn (sql/build :select [:id :name] :from :organizations) id)))
