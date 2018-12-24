@@ -41,9 +41,16 @@
    (resolver! [value parent args context]
      (project/find-by-organization-id (:system/db context) (:id parent)))))
 
+(def project-from-parent
+  (shields/has-current-account!
+   (resolver! [value parent args context]
+     (project/find-by-id (:system/db context) (:project-id parent)))))
+
+
 (def resolvers
-  {:project  (with-default-resolvers :id :name)
+  {:project      (with-default-resolvers :id :name)
    :organization {:projects projects-by-organization-id}
-   :mutation {:create-project create-project
-              :update-project update-project}
-   :query    {:fetch-project-by-id project-by-id}})
+   :flow         {:project project-from-parent}
+   :mutation     {:create-project create-project
+                  :update-project update-project}
+   :query        {:fetch-project-by-id project-by-id}})
