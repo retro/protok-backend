@@ -8,7 +8,8 @@
             [server.framework.util :refer [deep-merge]]
             [server.gql.resolvers.account]
             [server.gql.resolvers.session]
-            [server.gql.resolvers.organization]))
+            [server.gql.resolvers.organization]
+            [server.gql.resolvers.project]))
 
 (def resolve-context
   (pipeline! [value ctx]
@@ -29,4 +30,5 @@
    
    server.gql.resolvers.account/resolvers
    server.gql.resolvers.session/resolvers
-   server.gql.resolvers.organization/resolvers))
+   server.gql.resolvers.organization/resolvers
+   server.gql.resolvers.project/resolvers))

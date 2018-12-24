@@ -23,7 +23,7 @@
 (def find-column (partial finder (:column-finder regexes)))
 (def find-value (partial finder (:value-finder regexes)))
 (def find-foreign-table-key (partial finder (:foreign-key-table-finder regexes)))
-(def find-parent-table (partial finder (:parent-table regexes)))
+(def find-parent-table (partial finder (:parent-table-finder regexes)))
 
 (defn format-numeric-value-out-of-range [e]
   (let [message (oget e :message)

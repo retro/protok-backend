@@ -7,7 +7,7 @@
             [server.framework.batcher :as b]
             [server.framework.batcher.batch-by-id :refer [->BatchById]]))
 
-(defn create-organization! [conn name]
+(defn create-organization! [conn {:keys [name]}]
   (query-one
    conn
    (-> (h/insert-into :organizations)
@@ -48,9 +48,9 @@
    conn
    (sql/build :select [:member-role]
               :from :organization-members
-              :whener [:and
-                       [:= :account-id account-id]
-                       [:= :organization-id organization-id]])))
+              :where [:and
+                      [:= :account-id account-id]
+                      [:= :organization-id organization-id]])))
 
 (defn find-by-id [conn id]
   (b/fetch (->BatchById conn (sql/build :select [:id :name] :from :organizations) id)))
