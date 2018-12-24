@@ -32,6 +32,14 @@ type Project {
   id: ID!
   name: String!
   organization: Organization!
+  flows: [Flow]
+}
+
+type Flow {
+  id: ID!
+  name: String!
+  description: String
+  project: Project!
 }
 
 input CreateOrganizationInput {
@@ -53,11 +61,110 @@ input UpdateProjectInput {
   id: ID!
 }
 
+input CreateFlowInput {
+  name: String!
+  description: String
+  projectId: ID!
+}
+
+input UpdateFlowInput {
+  name: String!
+  description: String
+  id: ID!
+}
+
+enum FlowNodeType {
+  EVENT
+  SCREEN
+  SWITCH
+  FLOW_REF
+}
+
+interface FlowNode {
+  id: ID!
+  isEntrypoint: Boolean!
+  type: FlowNodeType!
+}
+
+type FlowEvent implements FlowNode {
+  id: ID!
+  isEntrypoint: Boolean!
+  type: FlowNodeType!
+  event: FlowEventPayload!
+}
+
+type FlowEventPayload {
+  name: String!
+  description: String
+  targetFlowNode: FlowNode
+}
+
+type FlowScreen implements FlowNode {
+  id: ID!
+  isEntrypoint: Boolean!
+  type: FlowNodeType!
+  screen: FlowScreenPayload!
+}
+
+type FlowScreenPayload {
+  name: String!
+  description: String
+  hotspots: [FlowScreenHotspot]
+}
+
+type FlowScreenHotspot {
+  id: ID!
+  name: String!
+  description: String
+  coordinates: FlowScreenHotspotCoordinates
+  dimensions: FlowScreenHotspotDimensions
+  targetFlowNode: FlowNode
+}
+
+type FlowScreenHotspotCoordinates {
+  top: Float
+  bottom: Float
+  left: Float
+  right: Float
+}
+
+type FlowScreenHotspotDimensions {
+  width: Float
+  height: Float
+}
+
+type FlowSwitch implements FlowNode {
+  id: ID!
+  isEntrypoint: Boolean!,
+  type: FlowNodeType!
+  switch: FlowSwitchPayload!
+}
+
+type FlowSwitchPayload {
+  name: String!
+  description: String
+  options: [FlowSwitchOption]
+}
+
+type FlowSwitchOption {
+  id: ID!
+  name: String!
+  description: String
+  targetFlowNode: FlowNode
+}
+
+type FlowFlowRef implements FlowNode {
+  id: ID!
+  isEntrypoint: Boolean!
+  type: FlowNodeType!
+  targetFlow: Flow
+}
 
 type Query {
   currentAccount: Account
   fetchOrganizationById(id:ID!): Organization
   fetchProjectById(id:ID!): Project
+  fetchFlowById(id:ID!): Flow
 }
 
 type Mutation {
@@ -67,4 +174,6 @@ type Mutation {
   updateOrganization(organization: UpdateOrganizationInput!): Organization
   createProject(project: CreateProjectInput!): Project
   updateProject(project: UpdateProjectInput!): Project
+  createFlow(flow: CreateFlowInput!): Flow
+  updateFlow(flow: UpdateFlowInput!): Flow
 }
