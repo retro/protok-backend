@@ -162,18 +162,25 @@ type FlowFlowRef implements FlowNode {
 
 type Query {
   currentAccount: Account
-  fetchOrganizationById(id:ID!): Organization
-  fetchProjectById(id:ID!): Project
-  fetchFlowById(id:ID!): Flow
+
+  fetchOrganization(id:ID!): Organization
+  fetchProject(id:ID!): Project
+  fetchFlow(id:ID!): Flow
 }
 
 type Mutation {
   requestLoginCode(email:String!): Boolean
   loginWithCode(email:String!, code:String): Session
-  createOrganization(organization: CreateOrganizationInput!): Organization
-  updateOrganization(organization: UpdateOrganizationInput!): Organization
-  createProject(project: CreateProjectInput!): Project
-  updateProject(project: UpdateProjectInput!): Project
-  createFlow(flow: CreateFlowInput!): Flow
-  updateFlow(flow: UpdateFlowInput!): Flow
+
+  createOrganization(input: CreateOrganizationInput!): Organization
+  updateOrganization(input: UpdateOrganizationInput!): Organization
+  deleteOrganization(id: ID!): Organization
+
+  createProject(input: CreateProjectInput!): Project
+  updateProject(input: UpdateProjectInput!): Project
+  deleteProject(id: ID!): Project
+
+  createFlow(input: CreateFlowInput!): Flow
+  updateFlow(input: UpdateFlowInput!): Flow
+  deleteFlow(id: ID!): Flow
 }

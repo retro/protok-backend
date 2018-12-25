@@ -1,56 +1,35 @@
 (ns server.gql.resolvers.project
   (:require [server.framework.pipeline :as pp :refer-macros [resolver! ts-resolver!]]
-            [server.framework.validations :as v]
-            [server.framework.jwt :as jwt]
-            [server.framework.graphql
-             :refer [with-default-resolvers
-                     validate!]]
+            [server.framework.graphql :refer [with-default-resolvers wrap-resolvers]]
             [server.gql.shields :as shields]
             [server.domain.project :as project]
-            [camel-snake-kebab.core :refer [->SCREAMING_SNAKE_CASE]]))
+            [server.gql.resolvers.crud :refer [crud-for]]
+            [server.gql.resolvers.shared :refer [args-validator!]]))
 
-(def create-project-validator
-  (v/to-validator {:name [:not-blank]
-                   :organization-id [:not-blank]}))
+(def validate-create!
+  (args-validator! {:input.name [:not-blank]
+                    :input.organization-id [:not-blank]}))
 
-(def update-project-validator
-  (v/to-validator {:name [:not-blank]
-                   :id [:not-blank]}))
-
-(def create-project
-  (shields/has-current-account!
-   (ts-resolver! [value parent args context]
-     (:project args)
-     (validate! value create-project-validator)
-     (project/create-project! (:system/db context) value))))
-
-(def update-project
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (:project args)
-     (validate! value update-project-validator)
-     (project/update-project! (:system/db context) value))))
-
-(def project-by-id
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (project/find-by-id (:system/db context) (:id args)))))
+(def validate-update!
+  (args-validator! {:input.name [:not-blank]
+                    :input.id [:not-blank]}))
 
 (def projects-by-organization-id
   (shields/has-current-account!
-   (resolver! [value parent args context]
+   (resolver! [value parent args context info]
      (project/find-by-organization-id (:system/db context) (:id parent)))))
 
 (def project-from-parent
   (shields/has-current-account!
-   (resolver! [value parent args context]
+   (resolver! [value parent args context info]
      (project/find-by-id (:system/db context) (:project-id parent)))))
 
-
 (def resolvers
-  {:project      (with-default-resolvers :id :name)
-   :organization {:projects projects-by-organization-id}
-   :flow         {:project project-from-parent}
-   :mutation     {:create-project create-project
-                  :update-project update-project}
-   :query        {:fetch-project-by-id project-by-id}})
+  (-> {:project      (with-default-resolvers :id :name)
+       :organization {:projects projects-by-organization-id}
+       :flow         {:project project-from-parent}}
+      (crud-for :project)
+      (wrap-resolvers {[:mutation :create-project] [shields/has-current-account! validate-create!]
+                       [:mutation :update-project] [shields/has-current-account! validate-update!]
+                       [:mutation :delete-project] shields/has-current-account!
+                       [:query :fetch-project]     shields/has-current-account!})))

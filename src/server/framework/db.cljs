@@ -8,7 +8,10 @@
                             spy get-env]]
             [camel-snake-kebab.core :refer [->kebab-case-keyword ->snake_case_string]]
             [camel-snake-kebab.extras :refer [transform-keys]]
-            [server.framework.db.errors :as errors]))
+            [server.framework.db.errors :as errors]
+            [server.framework.db.schema :refer-macros [defschema]]))
+
+(defschema dbschema)
 
 (def TYPANALYZE 20)
 (ocall types :setTypeParser

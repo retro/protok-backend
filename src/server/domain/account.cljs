@@ -4,39 +4,28 @@
             [honeysql-postgres.helpers :as hp]
             [server.framework.honeysql :refer [query query-one]]
             [promesa.core :as p :refer-macros [alet]]
+            [server.domain.queries :refer [make-create make-update make-find-by-id]]
             [server.framework.batcher :as b]
             [server.framework.batcher.batch-by-id :refer [->BatchById]]))
 
-(defn get-selected-fields [fields]
-  (cond
-    (= ::* fields) [:id :email :username]
-    (vector? fields) fields
-    :else [fields]))
+(def create! (make-create :accounts))
+(def update! (make-update :accounts))
+(def find-by-id (make-find-by-id :accounts))
 
-(defn create-account! [conn email]
-  (query-one
-   conn
-   (-> (h/insert-into :accounts)
-       (h/values [{:email email :username email}])
-       (hp/returning :*))))
-
-(defn find-by-id
-  ([conn id] (find-by-id conn id :id))
-  ([conn id fields]
-   (b/fetch (->BatchById conn (sql/build :select (get-selected-fields fields) :from :accounts) id))))
+(def sanitize-fields (partial server.framework.honeysql/sanitize-fields :accounts))
 
 (defn find-by-email
-  ([conn email] (find-by-email conn email [:id]))
-  ([conn email fields]
+  ([conn email] (find-by-email conn email :id))
+  ([conn email selection]
    (query-one
     conn
-    (sql/build :select (get-selected-fields fields) :from :accounts :where [:= :email email]))))
+    (sql/build :select (sanitize-fields selection) :from :accounts :where [:= :email email]))))
 
 (defn find-or-create-by-email!
   ([conn email] (find-or-create-by-email! conn email [:id :email]))
-  ([conn email fields]
-   (alet [acc (p/await (find-by-email conn email (get-selected-fields fields)))]
+  ([conn email selection]
+   (alet [acc (p/await (find-by-email conn email selection))]
      (if acc
        acc
-       (create-account! conn email)))))
+       (create! conn {:email email :username email} selection)))))
 

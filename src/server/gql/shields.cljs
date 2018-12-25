@@ -10,3 +10,10 @@
   (shield! [value _ _ context]
     (boolean (:current-account context))
     resolver))
+
+(defn wrap-resolvers [resolvers mapping]
+  (reduce-kv
+   (fn [m path shield-fn]
+     (update-in m path shield-fn))
+   resolvers
+   mapping))

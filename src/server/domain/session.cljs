@@ -14,7 +14,7 @@
        (hp/returning :*))))
 
 (defn get-account-from-email-and-login-code! [conn email code]
-  (alet [acc (p/await (account/find-by-email conn email :server.domain.account/*))]
+  (alet [acc (p/await (account/find-by-email conn email :*))]
     (when acc
       (->> (query-one
             conn

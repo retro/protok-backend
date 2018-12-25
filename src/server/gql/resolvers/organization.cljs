@@ -1,34 +1,44 @@
 (ns server.gql.resolvers.organization
-  (:require [server.framework.pipeline :as pp :refer-macros [resolver! ts-resolver!]]
+  (:require [server.framework.pipeline :as pp :refer-macros [resolver! ts-resolver! shield!]]
             [server.framework.validations :as v]
-            [server.framework.jwt :as jwt]
             [server.framework.graphql
              :refer [with-default-resolvers
+                     wrap-resolvers
                      validate!]]
             [server.domain.organization :as organization]
             [server.gql.shields :as shields]
-            [camel-snake-kebab.core :refer [->SCREAMING_SNAKE_CASE]]))
+            [camel-snake-kebab.core :refer [->SCREAMING_SNAKE_CASE]]
+            [server.gql.resolvers.crud :refer [crud-for]]
+            [server.gql.resolvers.shared :refer [args-validator!]]))
 
-(def create-organization-validator
-  (v/to-validator {:name [:not-blank]}))
+(defn can-update-organization! [resolver]
+  (shield! [value _ args context]
+    (organization/can-update? (:system/db context) (get-in args [:input :id]) (:current-account context))
+    resolver))
 
-(def update-organization-validator
-  (v/to-validator {:name [:not-blank]
-                   :id [:not-blank]}))
+(defn can-delete-organization! [resolver]
+  (shield! [value _ args context]
+    (organization/can-delete? (:system/db context) (:id args) (:current-account context))
+    resolver))
+
+(defn can-access-organization! [resolver]
+  (shield! [value _ args context]
+    (organization/can-access? (:system/db context) (:id args) (:current-account context))
+    resolver))
+
+(def validate-create!
+  (args-validator! {:input.name [:not-blank]}))
+
+(def validate-update!
+  (args-validator! {:input.name [:not-blank]
+                    :input.id [:not-blank]}))
 
 (def create-organization
-  (shields/has-current-account!
-   (ts-resolver! [value parent args context]
-     (validate! (:organization args) create-organization-validator)
-     (organization/create-organization! (:system/db context) (:organization args))
-     (pp/sideffect! (organization/create-organization-member! (:system/db context) (:id value) (:current-account context) "owner")))))
-
-(def update-organization
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (:organization args)
-     (validate! value update-organization-validator)
-     (organization/update-organization! (:system/db context) value))))
+  (-> (ts-resolver! [value parent args context info]
+        (organization/create! (:system/db context) (:input args) (:selection info))
+        (pp/sideffect! (organization/create-organization-member! (:system/db context) (:id value) (:current-account context) "owner")))
+      validate-create!
+      shields/has-current-account!))
 
 (def organization-memberships
   (shields/has-current-account!
@@ -36,19 +46,13 @@
      (organization/find-organization-memberships (:system/db context) (:current-account context)))))
 
 (def organization-from-parent
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (organization/find-by-id (:system/db context) (:organization-id parent)))))
-
-(def organization-by-id
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (organization/find-by-id (:system/db context) (:id args)))))
+  (resolver! [value parent args context]
+    (organization/find-by-id (:system/db context) (:organization-id parent))))
 
 (def member-role
-  (shields/has-current-account!
-   (resolver! [value parent args context]
-     (->SCREAMING_SNAKE_CASE (:member-role parent)))))
+  (resolver! [value parent args context]
+    (when-let [member-role (:member-role parent)]
+      (->SCREAMING_SNAKE_CASE member-role))))
 
 (def membership-from-organization
   (resolver! [value parent args context]
@@ -58,13 +62,15 @@
      (:current-account context))))
 
 (def resolvers
-  {:organization            (-> {:membership membership-from-organization}
-                                (with-default-resolvers :id :name))
-   :account                 {:organization-memberships organization-memberships}
-   :project                 {:organization organization-from-parent}
-   :organization-membership {:organization organization-from-parent
-                             :member-role  member-role}
-   :mutation                {:create-organization create-organization
-                             :update-organization update-organization}
-   :query                   {:fetch-organization-by-id organization-by-id}})
+  (-> {:organization            (-> {:membership membership-from-organization}
+                                    (with-default-resolvers :id :name))
+       :account                 {:organization-memberships organization-memberships}
+       :project                 {:organization organization-from-parent}
+       :organization-membership {:organization organization-from-parent
+                                 :member-role  member-role}
+       :mutation                {:create-organization create-organization}}
+      (crud-for :organization :except [:create])
+      (wrap-resolvers {[:query :fetch-organization]     can-access-organization!
+                       [:mutation :update-organization] [can-update-organization! validate-update!]
+                       [:mutation :delete-organization] can-delete-organization!})))
 

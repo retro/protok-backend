@@ -10,8 +10,8 @@
 
 (def current-account
   (shields/has-current-account!
-   (resolver! [value parent args context]
-     (account/find-by-id (:system/db context) (:current-account context) :server.domain.account/*))))
+   (resolver! [value parent args context info]
+     (account/find-by-id (:system/db context) (:current-account context) (:selection info)))))
 
 (def resolvers
   {:query {:current-account current-account}

@@ -6,7 +6,21 @@
             [oops.core :refer [oget oset!]]
             [server.framework.util :refer [jsx->clj]]
             [server.framework.pipeline :as r]
-            [cljs.core :refer [IAtom]]))
+            [cljs.core :refer [IAtom]]
+            ["graphql-list-fields" :as glf]
+            [clojure.string :as str]))
+
+(defn process-field-selection [field]
+  (if (str/includes? field ".")
+    (let [first-part (first (str/split field "."))]
+      [field (str first-part "_id")])
+    field))
+
+(defn process-fields-selection [selection]
+  (->> selection
+       (mapv process-field-selection)
+       flatten
+       (mapv ->kebab-case-keyword)))
 
 (defn throw-validation-errors [errors]
   (let [e (js/Error. "Invalid Data.")]
@@ -45,7 +59,8 @@
            (node nil {:parent parent
                       :args (transform-keys ->kebab-case-keyword (jsx->clj args))
                       :context context
-                      :info info}))
+                      :info {:original info
+                             :selection (process-fields-selection (glf info))}}))
 
          node-fn?
          (fn [parent args context info]
@@ -68,9 +83,23 @@
        (assoc acc type-name (update-type-resolvers-names v))))
    {} resolvers))
 
-(defn wrap-resolvers [resolvers]
+(defn default-wrap-resolvers [resolvers]
   (-> resolvers
       wrap-resolver-fns
       update-names
       clj->js))
 
+(defn apply-wrappers [wrappers val]
+  (reduce
+   (fn [acc wrapper]
+     (wrapper acc))
+   val
+   (reverse wrappers)))
+
+(defn wrap-resolvers [resolvers mapping]
+  (reduce-kv
+   (fn [m path wrappers]
+     (let [wrappers' (if (coll? wrappers) wrappers [wrappers])]
+       (update-in m path #(apply-wrappers wrappers' %))))
+   resolvers
+   mapping))

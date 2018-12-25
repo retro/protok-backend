@@ -14,8 +14,6 @@
     "node": "8.x"
   },
   "dependencies": {
-    "shadow-cljs": "^2.7.9",
-    "xmlhttprequest": "^1.8.0",
     "@sendgrid/mail": "^6.3.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.1",
@@ -23,12 +21,16 @@
     "db-migrate": "^0.11.1",
     "db-migrate-pg": "^0.4.0",
     "express-bearer-token": "^2.2.0",
+    "graphql-list-fields": "^2.0.2",
     "graphql-yoga": "^1.16.7",
     "html-to-text": "^4.0.0",
     "indefinite": "^2.1.1",
+    "inflected": "^2.0.4",
     "jsonwebtoken": "^8.3.0",
     "mjml": "^4.2.1",
     "pg": "^7.4.3",
-    "preview-email": "^0.0.8"
+    "preview-email": "^0.0.8",
+    "shadow-cljs": "^2.7.9",
+    "xmlhttprequest": "^1.8.0"
   }
 }

@@ -6,7 +6,7 @@
             [taoensso.timbre :as timbre :refer-macros [fatal info]]
             [server.gql.resolvers :refer [resolvers resolve-context]]
             [server.gql.type-defs :refer [type-defs]]
-            [server.framework.graphql :refer [wrap-resolvers]]
+            [server.framework.graphql :refer [default-wrap-resolvers]]
             [server.framework.graphql.context :refer [wrap-context]]
             [server.db :refer [db]]
             ["express-bearer-token" :as express-bearer-token]
@@ -16,7 +16,7 @@
   (let [ref (volatile! nil)
         server (GraphQLServer.
                 #js {:typeDefs @type-defs
-                     :resolvers (wrap-resolvers resolvers)
+                     :resolvers (default-wrap-resolvers resolvers)
                      :context (wrap-context resolve-context
                                             {:system/db @db})})
         port (or (@env :port) 3001)

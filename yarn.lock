@@ -1875,6 +1875,11 @@ graphql-import@^0.7.0, graphql-import@^0.7.1:
     lodash "^4.17.4"
     resolve-from "^4.0.0"
 
+graphql-list-fields@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/graphql-list-fields/-/graphql-list-fields-2.0.2.tgz#a4ade3cfa2028a2ac32d3f2870f5f8c5b5d5b466"
+  integrity sha512-9TSAwcVA3KWw7JWYep5NCk2aw3wl1ayLtbMpmG7l26vh1FZ+gZexNPP+XJfUFyJa71UU0zcKSgtgpsrsA3Xv9Q==
+
 graphql-middleware@1.7.7:
   version "1.7.7"
   resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.7.7.tgz#0a7a7193a873c4769401df2aef4ffb9c6ca97f43"
@@ -2179,6 +2184,11 @@ indefinite@^2.1.1:
 indexof@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
+
+inflected@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/inflected/-/inflected-2.0.4.tgz#323770961ccbe992a98ea930512e9a82d3d3ef77"
+  integrity sha512-HQPzFLTTUvwfeUH6RAGjD8cHS069mBqXG5n4qaxX7sJXBhVQrsGgF+0ZJGkSuN6a8pcUWB/GXStta11kKi/WvA==
 
 inflection@^1.10.0:
   version "1.12.0"
