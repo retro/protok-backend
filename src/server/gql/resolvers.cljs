@@ -10,7 +10,8 @@
             [server.gql.resolvers.session]
             [server.gql.resolvers.organization]
             [server.gql.resolvers.project]
-            [server.gql.resolvers.flow]))
+            [server.gql.resolvers.flow]
+            [server.gql.resolvers.flow-node]))
 
 (def resolve-context
   (pipeline! [value ctx]
@@ -33,5 +34,6 @@
    server.gql.resolvers.session/resolvers
    server.gql.resolvers.organization/resolvers
    server.gql.resolvers.project/resolvers
-   server.gql.resolvers.flow/resolvers))
+   server.gql.resolvers.flow/resolvers
+   server.gql.resolvers.flow-node/resolvers))
 

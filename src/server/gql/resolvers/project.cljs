@@ -17,12 +17,12 @@
 (def projects-by-organization-id
   (shields/has-current-account!
    (resolver! [value parent args context info]
-     (project/find-all-by-organization-id (:system/db context) (:id parent)))))
+     (project/find-all-by-organization-id (:system/db context) (:id parent) (:selection info)))))
 
 (def project-from-parent
   (shields/has-current-account!
    (resolver! [value parent args context info]
-     (project/find-by-id (:system/db context) (:project-id parent)))))
+     (project/find-by-id (:system/db context) (:project-id parent) (:selection info)))))
 
 (def resolvers
   (-> {:project      (with-default-resolvers :id :name)

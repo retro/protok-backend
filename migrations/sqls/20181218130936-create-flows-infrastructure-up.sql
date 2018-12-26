@@ -50,12 +50,12 @@ CREATE TABLE flow_screen_hotspots (
        id SERIAL PRIMARY KEY,
        name TEXT NOT NULL,
        description TEXT,
-       c_top INTEGER,
-       c_bottom INTEGER,
-       c_left INTEGER,
-       c_right INTEGER,
-       d_width INTEGER,
-       d_height INTEGER,
+       c_top FLOAT,
+       c_bottom FLOAT,
+       c_left FLOAT,
+       c_right FLOAT,
+       d_width FLOAT,
+       d_height FLOAT,
        created_at TIMESTAMP DEFAULT NOW(),
        updated_at TIMESTAMP DEFAULT NOW()
 );

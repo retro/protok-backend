@@ -34,7 +34,7 @@
   (if (= :* fields)
     :*
     (let [table-fields (get db/dbschema table)
-          fields' (-> (if (vector? fields) fields [fields])
+          fields' (-> (flatten [fields])
                       (conj :id)
                       set)]
       (filterv #(contains? table-fields %) fields'))))

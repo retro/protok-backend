@@ -10,6 +10,7 @@
             [server.db :refer [db]]
             ["apollo-server-express" :refer [ApolloServer]]
             ["express" :as express]
+            ["compression" :as compression]
             ["express-bearer-token" :as express-bearer-token]
             ["cors" :as cors]))
 
@@ -30,6 +31,7 @@
         gql-server (init-gql-server)
         port (or (@env :port) 3001)]
 
+    (ocall app :use (compression))
     (ocall app :use (express-bearer-token))
     (ocall gql-server :applyMiddleware #js {:app app :path "/graphql" :cors true})
 

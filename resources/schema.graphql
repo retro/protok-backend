@@ -40,6 +40,7 @@ type Flow {
   name: String!
   description: String
   project: Project!
+  nodes: [FlowNode]
 }
 
 input CreateOrganizationInput {
@@ -82,12 +83,14 @@ enum FlowNodeType {
 
 interface FlowNode {
   id: ID!
+  flow: Flow!
   isEntrypoint: Boolean!
   type: FlowNodeType!
 }
 
 type FlowEvent implements FlowNode {
   id: ID!
+  flow: Flow!
   isEntrypoint: Boolean!
   type: FlowNodeType!
   name: String!
@@ -95,13 +98,44 @@ type FlowEvent implements FlowNode {
   targetFlowNode: FlowNode
 }
 
+input CreateFlowEventInput {
+  flowId: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
+  targetFlowNodeId: ID
+}
+
+input UpdateFlowEventInput {
+  id: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
+  targetFlowNodeId: ID
+}
+
 type FlowScreen implements FlowNode {
   id: ID!
+  flow: Flow!
   isEntrypoint: Boolean!
   type: FlowNodeType!
   name: String!
   description: String
   hotspots: [FlowScreenHotspot]
+}
+
+input CreateFlowScreenInput {
+  flowId: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
+}
+
+input UpdateFlowScreenInput {
+  id: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
 }
 
 type FlowScreenHotspot {
@@ -125,13 +159,58 @@ type FlowScreenHotspotDimensions {
   height: Float
 }
 
+input CreateFlowScreenHotspotInput {
+  flowNodeId: ID!
+  name: String
+  description: String
+  targetFlowNodeId: ID
+  coordinates: FlowScreenHotspotCoordinatesInput
+  dimensions: FlowScreenHotspotDimensionsInput
+}
+
+input UpdateFlowScreenHotspotInput {
+  id: ID!
+  name: String
+  description: String
+  targetFlowNodeId: ID
+  coordinates: FlowScreenHotspotCoordinatesInput
+  dimensions: FlowScreenHotspotDimensionsInput
+}
+
+input FlowScreenHotspotCoordinatesInput {
+  top: Float
+  bottom: Float
+  left: Float
+  right: Float
+}
+
+input FlowScreenHotspotDimensionsInput {
+  width: Float
+  height: Float
+}
+
 type FlowSwitch implements FlowNode {
   id: ID!
+  flow: Flow!
   isEntrypoint: Boolean!,
   type: FlowNodeType!
   name: String!
   description: String
   options: [FlowSwitchOption]
+}
+
+input CreateFlowSwitchInput {
+  flowId: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
+}
+
+input UpdateFlowSwitchInput {
+  id: ID!
+  isEntrypoint: Boolean
+  name: String!
+  description: String
 }
 
 type FlowSwitchOption {
@@ -141,11 +220,39 @@ type FlowSwitchOption {
   targetFlowNode: FlowNode
 }
 
+input CreateFlowSwitchOptionInput {
+  flowNodeId: ID!
+  name: String
+  description: String
+  targetFlowNodeId: ID
+}
+
+input UpdateFlowSwitchOptionInput {
+  id: ID!
+  flowNodeId: ID
+  name: String
+  description: String
+  targetFlowNodeId: ID
+}
+
 type FlowFlowRef implements FlowNode {
   id: ID!
+  flow: Flow!
   isEntrypoint: Boolean!
   type: FlowNodeType!
   targetFlow: Flow
+}
+
+input CreateFlowFlowRefInput {
+  flowId: ID!
+  isEntrypoint: Boolean
+  targetFlowId: ID!
+}
+
+input UpdateFlowFlowRefInput {
+  id: ID!
+  isEntrypoint: Boolean
+  targetFlowId: ID!
 }
 
 type Query {
@@ -154,6 +261,8 @@ type Query {
   fetchOrganization(id:ID!): Organization
   fetchProject(id:ID!): Project
   fetchFlow(id:ID!): Flow
+
+  fetchFlowNode(id: ID!): FlowNode
 }
 
 type Mutation {
@@ -171,4 +280,26 @@ type Mutation {
   createFlow(input: CreateFlowInput!): Flow
   updateFlow(input: UpdateFlowInput!): Flow
   deleteFlow(id: ID!): Flow
+
+  createFlowScreen(input: CreateFlowScreenInput!): FlowScreen
+  updateFlowScreen(input: UpdateFlowScreenInput!): FlowScreen
+
+  createFlowEvent(input: CreateFlowEventInput!): FlowEvent
+  updateFlowEvent(input: UpdateFlowEventInput!): FlowEvent
+
+  createFlowSwitch(input: CreateFlowSwitchInput!): FlowSwitch
+  updateFlowSwitch(input: UpdateFlowSwitchInput!): FlowSwitch
+
+  createFlowFlowRef(input: CreateFlowFlowRefInput!): FlowFlowRef
+  updateFlowFlowRef(input: UpdateFlowFlowRefInput!): FlowFlowRef
+
+  deleteFlowNode(id: ID!): FlowNode
+
+  createFlowScreenHotspot(input: CreateFlowScreenHotspotInput!): FlowScreenHotspot
+  updateFlowScreenHotspot(input: UpdateFlowScreenHotspotInput!): FlowScreenHotspot
+  deleteFlowScreenHotspot(id: ID!): FlowScreenHotspot
+
+  createFlowSwitchOption(input: CreateFlowSwitchOptionInput!): FlowSwitchOption
+  updateFlowSwitchOption(input: UpdateFlowSwitchOptionInput!): FlowSwitchOption
+  deleteFlowSwitchOption(id: ID!): FlowSwitchOption
 }
