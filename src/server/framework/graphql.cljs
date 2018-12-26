@@ -5,7 +5,7 @@
             [promesa.core :as p]
             [oops.core :refer [oget oset!]]
             [server.framework.util :refer [jsx->clj]]
-            [server.framework.pipeline :as r]
+            [server.framework.pipeline :as pp :refer-macros [resolver!]]
             [cljs.core :refer [IAtom]]
             ["graphql-list-fields" :as glf]
             [clojure.string :as str]))
@@ -31,13 +31,14 @@
   (let [errors (validator args)]
     (if (and (not (nil? errors)) (not (empty? errors)))
       (throw-validation-errors errors)
-      r/ignore)))
+      pp/ignore)))
 
-(defn default-field-resolver [field parent args context info]
-  (let [val (get parent field)]
-    (if (fn? val)
-      (val (js->clj args :keywordize-keys true) context info)
-      val)))
+(defn make-default-field-resolver [field]
+  (resolver! [value parent context info]
+    (let [val (get parent field)]
+      (if (fn? val)
+        (val parent context info)
+        val))))
 
 (defn with-default-resolvers [& args]
   (let [[resolvers fields] (if (map? (first args)) [(first args) (rest args)] [{} args])]
@@ -45,8 +46,12 @@
      (fn [acc f]
        (if (acc f)
          acc
-         (assoc acc f (partial default-field-resolver f))))
+         (assoc acc f (make-default-field-resolver f))))
      resolvers fields)))
+
+(defn process-info [info]
+  {:original info
+   :selection (process-fields-selection (glf info))})
 
 (defn wrap-resolver-fns [resolvers]
   (postwalk
@@ -59,12 +64,11 @@
            (node nil {:parent parent
                       :args (transform-keys ->kebab-case-keyword (jsx->clj args))
                       :context context
-                      :info {:original info
-                             :selection (process-fields-selection (glf info))}}))
+                      :info (process-info info)}))
 
          node-fn?
          (fn [parent args context info]
-           (node parent (transform-keys ->kebab-case-keyword (jsx->clj args)) context info))
+           (node parent (transform-keys ->kebab-case-keyword (jsx->clj args)) context (process-info info)))
 
          :else node)))
    resolvers))

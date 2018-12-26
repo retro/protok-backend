@@ -17,7 +17,7 @@
 (def projects-by-organization-id
   (shields/has-current-account!
    (resolver! [value parent args context info]
-     (project/find-by-organization-id (:system/db context) (:id parent)))))
+     (project/find-all-by-organization-id (:system/db context) (:id parent)))))
 
 (def project-from-parent
   (shields/has-current-account!

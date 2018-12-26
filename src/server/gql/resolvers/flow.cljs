@@ -16,8 +16,8 @@
 
 (def flows-by-project-id
   (shields/has-current-account!
-   (resolver! [value parent args context]
-     (flow/find-by-project-id (:system/db context) (:id parent)))))
+   (resolver! [value parent args context info]
+     (flow/find-all-by-project-id (:system/db context) (:id parent) (:selection info)))))
 
 (def resolvers
   (-> {:flow    (with-default-resolvers :id :name)
