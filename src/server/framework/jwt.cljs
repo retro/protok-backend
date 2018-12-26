@@ -17,4 +17,4 @@
          #js {:expiresIn "2w"}))
 
 (defn get-from-context [context]
-  (oget context :?request.?token))
+  (oget context :?req.?token))

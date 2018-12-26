@@ -1,7 +1,6 @@
 (ns server.server
   (:require [mount.core :refer-macros [defstate]]
             [server.config :refer [env]]
-            ["graphql-yoga" :refer [GraphQLServer]]
             [oops.core :refer [ocall oget]]
             [taoensso.timbre :as timbre :refer-macros [fatal info]]
             [server.gql.resolvers :refer [resolvers resolve-context]]
@@ -9,42 +8,36 @@
             [server.framework.graphql :refer [default-wrap-resolvers]]
             [server.framework.graphql.context :refer [wrap-context]]
             [server.db :refer [db]]
+            ["apollo-server-express" :refer [ApolloServer]]
+            ["express" :as express]
             ["express-bearer-token" :as express-bearer-token]
             ["cors" :as cors]))
 
-(defn start-server []
-  (let [ref (volatile! nil)
-        server (GraphQLServer.
-                #js {:typeDefs @type-defs
-                     :resolvers (default-wrap-resolvers resolvers)
-                     :context (wrap-context resolve-context
-                                            {:system/db @db})})
-        port (or (@env :port) 3001)
-        endpoint "/graphql"
-        playground "/playground"]
+(defn format-error [e]
+  (let [errors (oget e :?extensions.?errors)]
+    #js {:path (oget e :path)
+         :message (oget e :message)
+         :errors errors}))
 
-    (ocall server :express.use (express-bearer-token))
-    (ocall server :express.use (cors))
-    
-    (-> (ocall server :start #js {:port port
-                                  :endpoint endpoint
-                                  :playground playground 
-                                  :formatError (fn [e]
-                                                 (let [errors (oget e :?extensions.?errors)]
-                                                   #js {:path (oget e :path)
-                                                        :message (oget e :message)
-                                                        :errors errors}))})
-        (ocall :then
-               (fn [s]
-                 (info "Server started on port:" port)
-                 (vreset! ref s))
-               #(fatal %)))
-    ref))
+(defn init-gql-server []
+  (ApolloServer. #js {:typeDefs @type-defs
+                      :resolvers (default-wrap-resolvers resolvers)
+                      :context (wrap-context resolve-context {:system/db @db})
+                      :formatError format-error}))
+
+(defn start-server []
+  (let [app (express)
+        gql-server (init-gql-server)
+        port (or (@env :port) 3001)]
+
+    (ocall app :use (express-bearer-token))
+    (ocall gql-server :applyMiddleware #js {:app app :path "/graphql" :cors true})
+
+    (ocall app :listen port #(info "Server starting on port:" port))))
 
 (defn stop-server [state]
-  (when-let [s @state]
-    (when-let [r @s]
-      (ocall r :close #(info "Server Stopped")))))
+  (when-let [server @state]
+    (ocall server :close #(info "Server stopped"))))
 
 (defstate server
   :start (start-server)

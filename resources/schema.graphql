@@ -90,10 +90,6 @@ type FlowEvent implements FlowNode {
   id: ID!
   isEntrypoint: Boolean!
   type: FlowNodeType!
-  event: FlowEventPayload!
-}
-
-type FlowEventPayload {
   name: String!
   description: String
   targetFlowNode: FlowNode
@@ -103,10 +99,6 @@ type FlowScreen implements FlowNode {
   id: ID!
   isEntrypoint: Boolean!
   type: FlowNodeType!
-  screen: FlowScreenPayload!
-}
-
-type FlowScreenPayload {
   name: String!
   description: String
   hotspots: [FlowScreenHotspot]
@@ -137,10 +129,6 @@ type FlowSwitch implements FlowNode {
   id: ID!
   isEntrypoint: Boolean!,
   type: FlowNodeType!
-  switch: FlowSwitchPayload!
-}
-
-type FlowSwitchPayload {
   name: String!
   description: String
   options: [FlowSwitchOption]
