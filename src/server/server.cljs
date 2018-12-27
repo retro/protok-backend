@@ -12,7 +12,9 @@
             ["express" :as express]
             ["compression" :as compression]
             ["express-bearer-token" :as express-bearer-token]
+            ["express-mung" :as express-mung]
             ["cors" :as cors]))
+
 
 (defn format-error [e]
   (let [errors (oget e :?extensions.?errors)]
@@ -26,6 +28,7 @@
                       :context (wrap-context resolve-context {:system/db @db})
                       :formatError format-error}))
 
+
 (defn start-server []
   (let [app (express)
         gql-server (init-gql-server)
@@ -33,7 +36,8 @@
 
     (ocall app :use (compression))
     (ocall app :use (express-bearer-token))
-    (ocall gql-server :applyMiddleware #js {:app app :path "/graphql" :cors true})
+ 
+    (ocall gql-server :applyMiddleware #js {:app app :path "/graphql" :cors true}) 
 
     (ocall app :listen port #(info "Server starting on port:" port))))
 

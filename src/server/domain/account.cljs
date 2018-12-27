@@ -5,8 +5,7 @@
             [server.framework.honeysql :refer [query query-one]]
             [promesa.core :as p :refer-macros [alet]]
             [server.domain.queries :refer [make-create make-update make-find-by-id]]
-            [server.framework.batcher :as b]
-            [server.framework.batcher.batch-by-id :refer [->BatchById]]))
+            [server.framework.batcher :as b]))
 
 (def create! (make-create :accounts))
 (def update! (make-update :accounts))

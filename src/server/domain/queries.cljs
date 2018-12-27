@@ -5,7 +5,7 @@
             [server.framework.honeysql :refer [query query-one sanitize-map sanitize-fields]]
             [promesa.core :as p :refer-macros [alet]]
             [server.framework.batcher :as b]
-            [server.framework.batcher.batch-by-id :refer [->BatchById]]))
+            [server.framework.batcher.batch-by-field :refer [->BatchByField]]))
 
 (defn make-create [table]
   (fn create!
@@ -35,7 +35,7 @@
   (fn find-by-id 
     ([conn id] (find-by-id conn id :*))
     ([conn id selection]
-      (b/fetch (->BatchById conn (sql/build :select (sanitize-fields table selection) :from table) id)))))
+      (b/fetch (->BatchByField conn (sql/build :select (sanitize-fields table selection) :from table) :id id)))))
 
 (defn make-delete-by-id [table]
   (fn delete-by-id!

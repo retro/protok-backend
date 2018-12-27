@@ -4,8 +4,10 @@
             [honeysql-postgres.helpers :as hp]
             [server.framework.honeysql :refer [query query-one sanitize-fields]]
             [promesa.core :as p :refer-macros [alet]]
+            [promesa.async-cljs :refer-macros [async]]
             [server.framework.batcher :as b]
             [server.framework.batcher.batch-all-by-field :refer [->BatchAllByField]]
+            [server.framework.batcher.batch-by-field :refer [->BatchByField]]
             [server.domain.shared :refer [ensure-selected]]
             [server.domain.queries :refer [make-find-by-id]]
             [server.domain.flow-node.queries :refer [get-node-type]]
@@ -26,25 +28,26 @@
   (into [] (reduce (fn [acc s] (concat acc s)) [] selections)))
 
 (defn process-node-result [result]
-  (let [node-attrs     (select-keys result [:id :is-entrypoint :flow-id])
-        node-type      (get-node-type result)
-        children-attrs (reduce-kv
-                        (fn [m field v]
-                          (let [field-name (name field)]
-                            (if (str/includes? field-name join-separator)
-                              (let [[table attr] (str/split field-name join-separator)]
-                                (assoc-in m [(keyword table) (keyword attr)] v))
-                              m)))
-                        {}
-                        result)]
-    (-> (case node-type
-          :event    (:flow-events children-attrs)
-          :screen   (:flow-screens children-attrs)
-          :switch   (:flow-switches children-attrs)
-          :flow-ref (:flow-flow-refs children-attrs)
-          {})
-        (assoc :type node-type)
-        (merge node-attrs))))
+  (when result
+    (let [node-attrs     (select-keys result [:id :is-entrypoint :flow-id])
+          node-type      (get-node-type result)
+          children-attrs (reduce-kv
+                          (fn [m field v]
+                            (let [field-name (name field)]
+                              (if (str/includes? field-name join-separator)
+                                (let [[table attr] (str/split field-name join-separator)]
+                                  (assoc-in m [(keyword table) (keyword attr)] v))
+                                m)))
+                          {}
+                          result)]
+      (-> (case node-type
+            :event    (:flow-events children-attrs)
+            :screen   (:flow-screens children-attrs)
+            :switch   (:flow-switches children-attrs)
+            :flow-ref (:flow-flow-refs children-attrs)
+            {})
+          (assoc :type node-type)
+          (merge node-attrs)))))
 
 (defn find-base-query [selection]
   (let [all-selections (concat-selections
@@ -66,3 +69,21 @@
    (let [sql (find-base-query selection)]
      (->> (b/fetch (->BatchAllByField conn sql :flow-id flow-id))
           (p/map #(mapv process-node-result %))))))
+
+(defn find-by-id
+  ([conn id] (find-by-id conn id :*))
+  ([conn id selection]
+   (let [sql (find-base-query selection)]
+     (->> (b/fetch (->BatchByField conn sql :flow-nodes.id id))
+          (p/map process-node-result)))))
+
+(defn delete-by-id!
+  ([conn id] (delete-by-id! conn id :*))
+  ([conn id selection]
+   (alet [current (p/await (find-by-id conn id selection))]
+     (async
+      (query 
+       conn
+       (-> (h/delete-from :flow-nodes)
+           (h/where [:= :id id])))
+      current))))

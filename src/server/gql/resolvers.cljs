@@ -11,7 +11,8 @@
             [server.gql.resolvers.organization]
             [server.gql.resolvers.project]
             [server.gql.resolvers.flow]
-            [server.gql.resolvers.flow-node]))
+            [server.gql.resolvers.flow-node]
+            [oops.core :refer [oget]]))
 
 (def resolve-context
   (pipeline! [value ctx]

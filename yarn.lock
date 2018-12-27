@@ -1656,6 +1656,11 @@ express-bearer-token@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/express-bearer-token/-/express-bearer-token-2.2.0.tgz#9e01bbb8a29791f1dc317e168543acac76bc989f"
 
+express-mung@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/express-mung/-/express-mung-0.5.1.tgz#403ca3710745a208c676f1024314f1ead139919a"
+  integrity sha512-5M8Oi2s9ePuP86YMyLT+hefWPPGxuxW3Vnuni/Hq3r2nGE0L4qulG0HkWuc4PIOpzZuZTwONwyfBFtR2xlnfgg==
+
 express@^4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
@@ -4928,6 +4933,11 @@ tough-cookie@~2.4.3:
   dependencies:
     psl "^1.1.24"
     punycode "^1.4.1"
+
+transit-js@^0.8.861:
+  version "0.8.861"
+  resolved "https://registry.yarnpkg.com/transit-js/-/transit-js-0.8.861.tgz#829e516b80349a41fff5d59f5e6993b5473f72c9"
+  integrity sha512-4O9OrYPZw6C0M5gMTvaeOp+xYz6EF79JsyxIvqXHlt+pisSrioJWFOE80N8aCPoJLcNaXF442RZrVtdmd4wkDQ==
 
 tty-browserify@0.0.0:
   version "0.0.0"

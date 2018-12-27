@@ -24,6 +24,16 @@
    (resolver! [value parent args context info]
      (flow-node/find-all-by-flow-id (:system/db context) (:id parent) (:selection info)))))
 
+(def flow-node-by-id
+  (shields/has-current-account!
+   (resolver! [value parent args context info]
+     (flow-node/find-by-id (:system/db context) (:id args) (:selection info)))))
+
+(def delete-flow-node-by-id
+  (shields/has-current-account!
+   (ts-resolver! [value parent args context info]
+     (flow-node/delete-by-id! (:system/db context) (:id args) (:selection info)))))
+
 (def flow-node-type
   (resolver! [value parent]
     (->SCREAMING_SNAKE_CASE_STRING (:type parent))))
@@ -47,7 +57,9 @@
                           (with-default-resolvers :id :is-entrypoint))
        :flow-node     (-> {:private/resolve-type flow-node-resolve-type}
                           (with-default-resolvers :id))
-       :flow          {:nodes flow-nodes-by-flow-id}}
+       :flow          {:nodes flow-nodes-by-flow-id}
+       :query         {:fetch-flow-node flow-node-by-id}
+       :mutation      {:delete-flow-node delete-flow-node-by-id}}
       (create-for :flow-event)
       (create-for :flow-screen)
       (create-for :flow-switch)
