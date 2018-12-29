@@ -129,6 +129,7 @@
        (p/map #(get % child-field))))
 
 (def fetch-flow-screen-id-from-id #(fetch-child-id-from-id %1 %2 :flow-screen-id))
+(def fetch-flow-switch-id-from-id #(fetch-child-id-from-id %1 %2 :flow-switch-id))
 
 (defn fetch-id-from-child-id [conn child-id child-field]
   (->> (query-one
@@ -137,3 +138,4 @@
        (p/map :id)))
 
 (def fetch-id-from-flow-screen-id #(fetch-id-from-child-id %1 %2 :flow-screen-id))
+(def fetch-id-from-flow-switch-id #(fetch-id-from-child-id %1 %2 :flow-switch-id))

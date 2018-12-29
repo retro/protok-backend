@@ -119,5 +119,5 @@
 (defn find-all-by-flow-node-id
   ([conn flow-node-id] (find-all-by-flow-node-id conn flow-node-id :*))
   ([conn flow-node-id selection]
-   (->> (b/fetch (->BatchAllByField conn (base-find-query selection) :flow-nodes.id flow-node-id))
+   (->> (b/fetch (->BatchAllByField conn (base-find-query selection) [:flow-nodes.id :flow-node-id] flow-node-id))
         (p/map #(mapv process-output %)))))

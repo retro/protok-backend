@@ -86,7 +86,7 @@
   ([conn id] (find-by-id conn id :*))
   ([conn id selection]
    (let [sql (find-base-query selection)]
-     (->> (b/fetch (->BatchByField conn sql :flow-nodes.id id))
+     (->> (b/fetch (->BatchByField conn sql [:flow-nodes.id :id] id))
           (p/map process-node-result)))))
 
 (defn delete-by-id!

@@ -11,17 +11,21 @@
   (-unpack [this results]
     (reduce
      (fn [acc res]
-       (let [key [field (res field)]
+       (let [[_ field-name] (if (vector? field) field [nil field])
+             key [field-name (res field-name)]
              items (or (acc key) [])]
          (assoc acc key (conj items res))))
      {} results))
 
   (-entity-key [this]
-    [field value])
-
+    (let [[_ field-name] (if (vector? field) field [nil field])]
+      [field-name value]))
+  
   (-fetch [this]
-    (query conn (h/where base-query [:= field value])))
+    (let [[field-path] (if (vector? field) field [field])]
+      (query conn (h/where base-query [:= field-path value]))))
   
   (-fetch-multi [this recs]
-    (let [values (set (map :value recs))]
-      (query conn (h/where base-query [:in field values])))))
+    (let [values (set (map :value recs))
+          [field-path] (if (vector? field) field [field])]
+      (query conn (h/where base-query [:in field-path values])))))

@@ -40,7 +40,7 @@ type Flow {
   name: String!
   description: String
   project: Project!
-  nodes: [FlowNode]
+  flowNodes: [FlowNode]
 }
 
 input CreateOrganizationInput {
@@ -145,6 +145,7 @@ type FlowScreenHotspot {
   coordinates: FlowScreenHotspotCoordinates
   dimensions: FlowScreenHotspotDimensions
   targetFlowNode: FlowNode
+  flowNode: FlowNode
 }
 
 type FlowScreenHotspotCoordinates {
@@ -218,6 +219,7 @@ type FlowSwitchOption {
   name: String!
   description: String
   targetFlowNode: FlowNode
+  flowNode: FlowNode
 }
 
 input CreateFlowSwitchOptionInput {
@@ -265,6 +267,7 @@ type Query {
   fetchFlowNode(id: ID!): FlowNode
   
   fetchFlowScreenHotspot(id: ID!): FlowScreenHotspot
+  fetchFlowSwitchOption(id: ID!): FlowSwitchOption
 }
 
 type Mutation {
@@ -299,7 +302,7 @@ type Mutation {
 
   createFlowScreenHotspot(input: CreateFlowScreenHotspotInput!): FlowScreenHotspot
   updateFlowScreenHotspot(input: UpdateFlowScreenHotspotInput!): FlowScreenHotspot
-  deleteFlowScreenHotspot(id: ID!): Boolean!
+  deleteFlowScreenHotspot(id: ID!): Boolean!  
 
   createFlowSwitchOption(input: CreateFlowSwitchOptionInput!): FlowSwitchOption
   updateFlowSwitchOption(input: UpdateFlowSwitchOptionInput!): FlowSwitchOption

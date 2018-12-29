@@ -38,6 +38,14 @@
   (resolver! [value parent]
     (->SCREAMING_SNAKE_CASE_STRING (:type parent))))
 
+(def find-flow-node-by-target-flow-node-id
+  (resolver! [value parent args context info]
+    (flow-node/find-by-id (:system/db context) (:target-flow-node-id parent) (:selection info))))
+
+(def find-flow-node-by-flow-node-id
+  (resolver! [value parent args context info]
+    (flow-node/find-by-id (:system/db context) (:flow-node-id parent) (:selection info))))
+
 (defn flow-node-resolve-type [node]
   (case (:type node)
     :event    "FlowEvent"
@@ -47,19 +55,23 @@
     nil))
 
 (def resolvers
-  (-> {:flow-event    (-> {:type flow-node-type}
-                          (with-default-resolvers :id :is-entrypoint :name :description))
-       :flow-screen   (-> {:type flow-node-type}
-                          (with-default-resolvers :id :is-entrypoint :name :description))
-       :flow-switch   (-> {:type flow-node-type}
-                          (with-default-resolvers :id :is-entrypoint :name :description))
-       :flow-flow-ref (-> {:type flow-node-type}
-                          (with-default-resolvers :id :is-entrypoint))
-       :flow-node     (-> {:private/resolve-type flow-node-resolve-type}
-                          (with-default-resolvers :id))
-       :flow          {:nodes flow-nodes-by-flow-id}
-       :query         {:fetch-flow-node flow-node-by-id}
-       :mutation      {:delete-flow-node delete-flow-node-by-id}}
+  (-> {:flow-event          (-> {:type flow-node-type}
+                                (with-default-resolvers :id :is-entrypoint :name :description))
+       :flow-screen         (-> {:type flow-node-type}
+                                (with-default-resolvers :id :is-entrypoint :name :description))
+       :flow-switch         (-> {:type flow-node-type}
+                                (with-default-resolvers :id :is-entrypoint :name :description))
+       :flow-flow-ref       (-> {:type flow-node-type}
+                                (with-default-resolvers :id :is-entrypoint))
+       :flow-node           (-> {:private/resolve-type flow-node-resolve-type}
+                                (with-default-resolvers :id))
+       :flow                {:flow-nodes flow-nodes-by-flow-id}
+       :flow-screen-hotspot {:target-flow-node find-flow-node-by-target-flow-node-id
+                             :flow-node        find-flow-node-by-flow-node-id}
+       :flow-switch-option  {:target-flow-node find-flow-node-by-target-flow-node-id
+                             :flow-node        find-flow-node-by-flow-node-id}
+       :query               {:fetch-flow-node flow-node-by-id}
+       :mutation            {:delete-flow-node delete-flow-node-by-id}}
       (create-for :flow-event)
       (create-for :flow-screen)
       (create-for :flow-switch)
