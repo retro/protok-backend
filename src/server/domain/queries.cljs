@@ -39,10 +39,10 @@
 
 (defn make-delete-by-id [table]
   (fn delete-by-id!
-    ([conn id] (delete-by-id! conn id :*))
-    ([conn id selection]
-     (query-one
-      conn
-      (-> (h/delete-from table)
-          (h/where [:= :id id])
-          (hp/returning (sanitize-fields table selection)))))))
+    ([conn id & args]
+     (->> (query-one
+           conn
+           (-> (h/delete-from table)
+               (h/where [:= :id id])
+               (hp/returning :id)))
+          (p/map boolean)))))

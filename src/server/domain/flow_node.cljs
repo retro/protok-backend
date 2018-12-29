@@ -29,17 +29,29 @@
 
 (defn process-node-result [result]
   (when result
-    (let [node-attrs     (select-keys result [:id :is-entrypoint :flow-id])
-          node-type      (get-node-type result)
-          children-attrs (reduce-kv
-                          (fn [m field v]
-                            (let [field-name (name field)]
-                              (if (str/includes? field-name join-separator)
-                                (let [[table attr] (str/split field-name join-separator)]
-                                  (assoc-in m [(keyword table) (keyword attr)] v))
-                                m)))
-                          {}
-                          result)]
+    (let [node-attrs     
+          (select-keys 
+           result 
+           [:id
+            :is-entrypoint
+            :flow-id
+            :flow-screen-id
+            :flow-event-id
+            :flow-switch-id
+            :flow-flow-ref-id])
+
+          node-type (get-node-type result)
+
+          children-attrs 
+          (reduce-kv
+           (fn [m field v]
+             (let [field-name (name field)]
+               (if (str/includes? field-name join-separator)
+                 (let [[table attr] (str/split field-name join-separator)]
+                   (assoc-in m [(keyword table) (keyword attr)] v))
+                 m)))
+           {}
+           result)]
       (-> (case node-type
             :event    (:flow-events children-attrs)
             :screen   (:flow-screens children-attrs)
@@ -57,7 +69,7 @@
                         (prepare-join-selection :flow-switches selection)
                         (prepare-join-selection :flow-flow-refs selection))]
     (sql/build :select all-selections 
-               :from :flow-nodes :flow-events :flow-screens :flow-switches :flow-flow-refs 
+               :from :flow-nodes
                :left-join [:flow-events    [:= :flow-nodes.flow-event-id :flow-events.id]
                            :flow-screens   [:= :flow-nodes.flow-screen-id :flow-screens.id]
                            :flow-switches  [:= :flow-nodes.flow-switch-id :flow-switches.id]
@@ -78,12 +90,10 @@
           (p/map process-node-result)))))
 
 (defn delete-by-id!
-  ([conn id] (delete-by-id! conn id :*))
-  ([conn id selection]
-   (alet [current (p/await (find-by-id conn id selection))]
-     (async
-      (query 
-       conn
-       (-> (h/delete-from :flow-nodes)
-           (h/where [:= :id id])))
-      current))))
+  ([conn id & args]
+   (->> (query-one
+         conn
+         (-> (h/delete-from :flow-nodes)
+             (h/where [:= :id id])
+             (hp/returning :id)))
+        (p/map boolean))))

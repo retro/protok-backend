@@ -2,5 +2,5 @@
 
 (defn ensure-selected [selection & fields]
   (if (= :* selection)
-    selection
+    [selection]
     (concat (flatten [selection]) fields)))

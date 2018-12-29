@@ -161,7 +161,7 @@ type FlowScreenHotspotDimensions {
 
 input CreateFlowScreenHotspotInput {
   flowNodeId: ID!
-  name: String
+  name: String!
   description: String
   targetFlowNodeId: ID
   coordinates: FlowScreenHotspotCoordinatesInput
@@ -170,7 +170,7 @@ input CreateFlowScreenHotspotInput {
 
 input UpdateFlowScreenHotspotInput {
   id: ID!
-  name: String
+  name: String!
   description: String
   targetFlowNodeId: ID
   coordinates: FlowScreenHotspotCoordinatesInput
@@ -263,6 +263,8 @@ type Query {
   fetchFlow(id:ID!): Flow
 
   fetchFlowNode(id: ID!): FlowNode
+  
+  fetchFlowScreenHotspot(id: ID!): FlowScreenHotspot
 }
 
 type Mutation {
@@ -271,15 +273,15 @@ type Mutation {
 
   createOrganization(input: CreateOrganizationInput!): Organization
   updateOrganization(input: UpdateOrganizationInput!): Organization
-  deleteOrganization(id: ID!): Organization
+  deleteOrganization(id: ID!): Boolean!
 
   createProject(input: CreateProjectInput!): Project
   updateProject(input: UpdateProjectInput!): Project
-  deleteProject(id: ID!): Project
+  deleteProject(id: ID!): Boolean!
 
   createFlow(input: CreateFlowInput!): Flow
   updateFlow(input: UpdateFlowInput!): Flow
-  deleteFlow(id: ID!): Flow
+  deleteFlow(id: ID!): Boolean!
 
   createFlowScreen(input: CreateFlowScreenInput!): FlowScreen
   updateFlowScreen(input: UpdateFlowScreenInput!): FlowScreen
@@ -293,13 +295,13 @@ type Mutation {
   createFlowFlowRef(input: CreateFlowFlowRefInput!): FlowFlowRef
   updateFlowFlowRef(input: UpdateFlowFlowRefInput!): FlowFlowRef
 
-  deleteFlowNode(id: ID!): FlowNode
+  deleteFlowNode(id: ID!): Boolean!
 
   createFlowScreenHotspot(input: CreateFlowScreenHotspotInput!): FlowScreenHotspot
   updateFlowScreenHotspot(input: UpdateFlowScreenHotspotInput!): FlowScreenHotspot
-  deleteFlowScreenHotspot(id: ID!): FlowScreenHotspot
+  deleteFlowScreenHotspot(id: ID!): Boolean!
 
   createFlowSwitchOption(input: CreateFlowSwitchOptionInput!): FlowSwitchOption
   updateFlowSwitchOption(input: UpdateFlowSwitchOptionInput!): FlowSwitchOption
-  deleteFlowSwitchOption(id: ID!): FlowSwitchOption
+  deleteFlowSwitchOption(id: ID!): Boolean!
 }

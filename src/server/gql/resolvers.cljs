@@ -12,7 +12,8 @@
             [server.gql.resolvers.project]
             [server.gql.resolvers.flow]
             [server.gql.resolvers.flow-node]
-            [oops.core :refer [oget]]))
+            [server.gql.resolvers.flow-screen-hotspot]
+            [server.gql.resolvers.flow-switch-option]))
 
 (def resolve-context
   (pipeline! [value ctx]
@@ -36,5 +37,7 @@
    server.gql.resolvers.organization/resolvers
    server.gql.resolvers.project/resolvers
    server.gql.resolvers.flow/resolvers
-   server.gql.resolvers.flow-node/resolvers))
+   server.gql.resolvers.flow-node/resolvers
+   server.gql.resolvers.flow-screen-hotspot/resolvers
+   server.gql.resolvers.flow-switch-option/resolvers))
 

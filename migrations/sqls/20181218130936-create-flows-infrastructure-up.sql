@@ -48,6 +48,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE flow_screen_hotspots (
        id SERIAL PRIMARY KEY,
+       flow_screen_id INTEGER REFERENCES flow_screens(id) ON DELETE CASCADE,
        name TEXT NOT NULL,
        description TEXT,
        c_top FLOAT,
@@ -82,6 +83,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE flow_switch_options (
        id SERIAL PRIMARY KEY,
+       flow_switch_id INTEGER REFERENCES flow_switches(id) ON DELETE CASCADE,
        name TEXT NOT NULL,
        description TEXT,
        created_at TIMESTAMP DEFAULT NOW(),
@@ -96,7 +98,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE flow_flow_refs (
        id SERIAL PRIMARY KEY,
-       target_flow_id INTEGER REFERENCES flows(id) ON DELETE SET NULL,
+       target_flow_id INTEGER REFERENCES flows(id) ON DELETE CASCADE,
        created_at TIMESTAMP DEFAULT NOW(),
        updated_at TIMESTAMP DEFAULT NOW()
 );

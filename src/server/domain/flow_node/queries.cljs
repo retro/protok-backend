@@ -121,3 +121,19 @@
                          (-> child
                              (assoc :type (get-node-type node))
                              (merge (select-keys node [:id :flow-id :is-entrypoint]))))))))))))
+
+(defn fetch-child-id-from-id [conn id child-field]
+  (->> (query-one
+        conn
+        (sql/build :select child-field :from :flow-nodes :where [:= :id id]))
+       (p/map #(get % child-field))))
+
+(def fetch-flow-screen-id-from-id #(fetch-child-id-from-id %1 %2 :flow-screen-id))
+
+(defn fetch-id-from-child-id [conn child-id child-field]
+  (->> (query-one
+        conn
+        (sql/build :select :id :from :flow-nodes :where [:= child-field child-id]))
+       (p/map :id)))
+
+(def fetch-id-from-flow-screen-id #(fetch-id-from-child-id %1 %2 :flow-screen-id))
