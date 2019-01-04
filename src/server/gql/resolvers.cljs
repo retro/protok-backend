@@ -10,6 +10,7 @@
             [server.gql.resolvers.session]
             [server.gql.resolvers.organization]
             [server.gql.resolvers.project]
+            [server.gql.resolvers.project-file]
             [server.gql.resolvers.flow]
             [server.gql.resolvers.flow-node]
             [server.gql.resolvers.flow-screen-hotspot]
@@ -36,6 +37,7 @@
    server.gql.resolvers.session/resolvers
    server.gql.resolvers.organization/resolvers
    server.gql.resolvers.project/resolvers
+   server.gql.resolvers.project-file/resolvers
    server.gql.resolvers.flow/resolvers
    server.gql.resolvers.flow-node/resolvers
    server.gql.resolvers.flow-screen-hotspot/resolvers

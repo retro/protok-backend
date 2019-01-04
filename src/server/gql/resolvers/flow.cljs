@@ -14,10 +14,12 @@
   (args-validator! {:input.name [:not-blank]
                     :input.id [:not-blank]}))
 
-(def flow-from-parent 
+(defn make-flow-from-parent [field] 
   (shields/has-current-account!
    (resolver! [value parent args context info]
-     (flow/find-by-id (:system/db context) (:flow-id parent) (:selection info)))))
+     (flow/find-by-id (:system/db context) (get parent field) (:selection info)))))
+
+(def flow-from-parent-flow-id (make-flow-from-parent :flow-id))
 
 (def flows-by-project-id
   (shields/has-current-account!
@@ -27,7 +29,12 @@
 (def resolvers
   (-> {:flow          (with-default-resolvers :id :name)
        :project       {:flows flows-by-project-id}
-       :flow-flow-ref {:target-flow flow-from-parent}}
+       :flow-node     {:flow flow-from-parent-flow-id}
+       :flow-screen   {:flow flow-from-parent-flow-id}
+       :flow-event    {:flow flow-from-parent-flow-id}
+       :flow-switch   {:flow flow-from-parent-flow-id}
+       :flow-flow-ref {:flow        flow-from-parent-flow-id
+                       :target-flow (make-flow-from-parent :target-flow-id)}}
       (crud-for :flow)
       (wrap-resolvers {[:mutation :create-flow] [shields/has-current-account! validate-create!]
                        [:mutation :update-flow] [shields/has-current-account! validate-update!]

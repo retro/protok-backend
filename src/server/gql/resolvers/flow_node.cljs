@@ -55,7 +55,8 @@
     nil))
 
 (def resolvers
-  (-> {:flow-event          (-> {:type flow-node-type}
+  (-> {:flow-event          (-> {:type flow-node-type
+                                 :target-flow-node find-flow-node-by-target-flow-node-id}
                                 (with-default-resolvers :id :is-entrypoint :name :description))
        :flow-screen         (-> {:type flow-node-type}
                                 (with-default-resolvers :id :is-entrypoint :name :description))

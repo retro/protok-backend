@@ -33,6 +33,17 @@ type Project {
   name: String!
   organization: Organization!
   flows: [Flow]
+  projectFiles:[ProjectFile]
+}
+
+type ProjectFile {
+  id: ID!
+  filename: String!
+  serverFilename: String!
+  uploadUrl: String!
+  description: String
+  mimeType: String!
+  project: Project!
 }
 
 type Flow {
@@ -60,6 +71,18 @@ input CreateProjectInput {
 input UpdateProjectInput {
   name: String!
   id: ID!
+}
+
+input CreateProjectFileInput {
+  projectId: ID!
+  filename: String!
+  mimeType: String!
+  description: String
+}
+
+input UpdateProjectFileInput {
+  id: ID!
+  description: String
 }
 
 input CreateFlowInput {
@@ -122,6 +145,7 @@ type FlowScreen implements FlowNode {
   name: String!
   description: String
   hotspots: [FlowScreenHotspot]
+  projectFile: ProjectFile
 }
 
 input CreateFlowScreenInput {
@@ -129,6 +153,7 @@ input CreateFlowScreenInput {
   isEntrypoint: Boolean
   name: String!
   description: String
+  projectFileId: ID
 }
 
 input UpdateFlowScreenInput {
@@ -136,6 +161,7 @@ input UpdateFlowScreenInput {
   isEntrypoint: Boolean
   name: String!
   description: String
+  projectFileId: ID
 }
 
 type FlowScreenHotspot {
@@ -248,13 +274,13 @@ type FlowFlowRef implements FlowNode {
 input CreateFlowFlowRefInput {
   flowId: ID!
   isEntrypoint: Boolean
-  targetFlowId: ID!
+  targetFlowId: ID
 }
 
 input UpdateFlowFlowRefInput {
   id: ID!
   isEntrypoint: Boolean
-  targetFlowId: ID!
+  targetFlowId: ID
 }
 
 type Query {
@@ -262,6 +288,7 @@ type Query {
 
   fetchOrganization(id:ID!): Organization
   fetchProject(id:ID!): Project
+  fetchProjectFile(id:ID!): ProjectFile
   fetchFlow(id:ID!): Flow
 
   fetchFlowNode(id: ID!): FlowNode
@@ -281,6 +308,10 @@ type Mutation {
   createProject(input: CreateProjectInput!): Project
   updateProject(input: UpdateProjectInput!): Project
   deleteProject(id: ID!): Boolean!
+
+  createProjectFile(input: CreateProjectFileInput!): ProjectFile
+  updateProjectFile(input: UpdateProjectFileInput!): ProjectFile
+  deleteProjectFile(id: ID!): Boolean!
 
   createFlow(input: CreateFlowInput!): Flow
   updateFlow(input: UpdateFlowInput!): Flow

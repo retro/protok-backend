@@ -12,8 +12,8 @@
             [server.framework.db.schema :refer-macros [defschema]]))
 
 (defschema dbschema)
-
 (def TYPANALYZE 20)
+
 (ocall types :setTypeParser
        TYPANALYZE
        (fn [val]

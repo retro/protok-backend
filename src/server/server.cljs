@@ -12,7 +12,6 @@
             ["express" :as express]
             ["compression" :as compression]
             ["express-bearer-token" :as express-bearer-token]
-            ["express-mung" :as express-mung]
             ["cors" :as cors]))
 
 

@@ -40,12 +40,16 @@
           (h/values [(sanitize-map :flow-nodes input')])
           (hp/returning :*))))))
 
+(def default-create-child-data
+  {:flow-flow-refs {:target-flow-id nil}})
+
 (defn create-node-child! [conn table input selection]
-  (query-one
-   conn
-   (-> (h/insert-into table)
-       (h/values [(sanitize-map table input)])
-       (hp/returning (sanitize-fields table selection)))))
+  (let [data (sanitize-map table (merge (get default-create-child-data table) input))]
+    (query-one
+     conn
+     (-> (h/insert-into table)
+         (h/values [data])
+         (hp/returning (sanitize-fields table selection))))))
 
 (defn make-create [entity-type]
   (let [table (get-table entity-type)
