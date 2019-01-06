@@ -12,7 +12,7 @@
             [server.domain.shared :refer [ensure-selected]]))
 
 (defn get-put-url [project-file]
-  (let [filename-parts ["images"
+  (let [filename-parts [(:s-3-folder @env)
                         (:project-id project-file)
                         (:id project-file)
                         (:filename project-file)]
@@ -25,7 +25,7 @@
 
 (defn get-server-filename [project-file]
   (when-let [filename (:filename project-file)]
-    (str/join "/" ["images"
+    (str/join "/" [(:s-3-folder @env)
                    (:project-id project-file)
                    (:id project-file)
                    filename])))
