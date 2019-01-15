@@ -108,7 +108,8 @@
                                     [:flow-nodes.flow-screen-id [:flow-nodes.id :flow-node-id]]))]
     (sql/build :select all-selections 
                :from :flow-screen-hotspots
-               :left-join [:flow-nodes [:= :flow-screen-hotspots.flow-screen-id :flow-nodes.flow-screen-id]])))
+               :left-join [:flow-nodes [:= :flow-screen-hotspots.flow-screen-id :flow-nodes.flow-screen-id]]
+               :order-by [:flow-screen-hotspots.c-top :flow-screen-hotspots.c-left])))
 
 (defn find-by-id
   ([conn id] (find-by-id conn id :*))
