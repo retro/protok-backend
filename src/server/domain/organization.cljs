@@ -4,7 +4,8 @@
             [honeysql-postgres.helpers :as hp]
             [server.framework.honeysql :refer [query query-one sanitize-map sanitize-fields]]
             [promesa.core :as p :refer-macros [alet]]
-            [server.domain.queries :refer [make-create make-update make-find-by-id]]))
+            [server.domain.queries :refer [make-create make-update make-find-by-id]]
+            [server.domain.account :as account]))
 
 (def create! (make-create :organizations))
 (def find-by-id (make-find-by-id :organizations))
@@ -21,7 +22,12 @@
                     :member-role member-role}])
         (hp/returning :*)))))
 
-(defn find-organization-memberships [conn account-id]
+(defn create-organization-member-by-email!
+  ([conn organization-id email]
+   (alet [account (p/await (account/find-or-create-by-email! conn email))]
+     (create-organization-member! conn organization-id (:id account)))))
+
+(defn find-account-organization-memberships [conn account-id]
   (query
    conn
    (sql/build :select [:organization-id :member-role]
@@ -31,11 +37,18 @@
 (defn find-organization-membership [conn organization-id account-id]
   (query-one
    conn
-   (sql/build :select [:member-role]
+   (sql/build :select [:member-role :account-id]
               :from :organization-members
               :where [:and
                       [:= :account-id account-id]
                       [:= :organization-id organization-id]])))
+
+(defn find-organization-memberships [conn organization-id]
+  (query
+   conn
+   (sql/build :select [:member-role :account-id]
+              :from :organization-members
+              :where [:= :organization-id organization-id])))
 
 (defn can-update? [conn organization-id account-id]
   (when (and organization-id account-id)

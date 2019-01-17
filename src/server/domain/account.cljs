@@ -27,4 +27,3 @@
      (if acc
        acc
        (create! conn {:email email :username email} selection)))))
-

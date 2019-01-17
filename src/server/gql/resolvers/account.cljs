@@ -13,7 +13,12 @@
    (resolver! [value parent args context info]
      (account/find-by-id (:system/db context) (:current-account context) (:selection info)))))
 
+(def account-from-organization-membership
+  (resolver! [value parent args context info]
+    (account/find-by-id (:system/db context) (:account-id parent))))
+
 (def resolvers
   {:query {:current-account current-account}
+   :organization-membership {:account account-from-organization-membership}
    :account (-> {}
                 (with-default-resolvers :id :email :username))})

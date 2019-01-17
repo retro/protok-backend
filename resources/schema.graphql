@@ -21,11 +21,13 @@ type Organization {
   name: String!
   membership: OrganizationMembership!
   projects: [Project]
+  memberships: [OrganizationMembership]
 }
 
 type OrganizationMembership {
   memberRole: OrganizationMembershipRole!
   organization: Organization!
+  account: Account!
 }
 
 type Project {
@@ -304,6 +306,8 @@ type Mutation {
   createOrganization(input: CreateOrganizationInput!): Organization
   updateOrganization(input: UpdateOrganizationInput!): Organization
   deleteOrganization(id: ID!): Boolean!
+  
+  inviteOrganizationMember(organizationId: ID!, email: String!): OrganizationMembership
 
   createProject(input: CreateProjectInput!): Project
   updateProject(input: UpdateProjectInput!): Project
